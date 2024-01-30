@@ -7,12 +7,12 @@ It will return enqueued HttpResponses from a queue (FIFO).
 Depending on the flag on creation, the mock handler will throw errors if the requests do not match the enqueued requests signatures.
 
 To use the MockHttpMessageHandler (and thus mocking the HttpClient request-response interaction), use the following in the test setup:
-```
+```csharp
 var mockHttpMessageHandler = new MockHttpMessageHandler(true);
 var httpClient = new HttpClient(_mockHttpMessageHandler);
 ```
 The handler can then be cleared and preloaded:
-```
+```csharp
 // Clear everything in the MessageHandler queue
 mockHttpMessageHandler.ClearQueue();
 // Add a Json response based on a provided object (Json serialized)
