@@ -4,12 +4,25 @@ using System.Text.Json;
 namespace fgiele.github.TestHelper
 {
     public class MockHttpMessageHandler : HttpMessageHandler
-    {
-        private readonly Queue<Call> _calls = new Queue<Call>();
+    {        private readonly Queue<Call> _calls = new Queue<Call>();
+        private readonly List<Call> _receivedCalls = new List<Call>();
         private readonly bool _errorIfIncorrectCall;
+
         public MockHttpMessageHandler(bool errorIfIncorrectCall = false)
         {
             _errorIfIncorrectCall = errorIfIncorrectCall;
+        }
+
+        public int TimesCalled()
+        {
+            return _receivedCalls.Count;
+        }
+
+        public int TimesCalled(string requestUrl, HttpMethod method, string? args = null)
+        {
+            return _receivedCalls.Count(call => call.Args == args
+                                    && call.Method == method
+                                    && call.RequestUrl.Equals(requestUrl, StringComparison.InvariantCultureIgnoreCase));
         }
 
         public void AddMockResponse(string requestUrl, HttpMethod method, HttpContent? response, HttpStatusCode status, string? args = null)
@@ -39,6 +52,7 @@ namespace fgiele.github.TestHelper
         public void ClearQueue()
         {
             _calls.Clear();
+            _receivedCalls.Clear();
         }
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
@@ -81,6 +95,13 @@ namespace fgiele.github.TestHelper
                 }
             }
 
+            _receivedCalls.Add(new Call
+            {
+                Args = request.Content != null ? await request.Content.ReadAsStringAsync() : null,
+                Method = request.Method,
+                RequestUrl = request.RequestUri?.AbsolutePath ?? string.Empty
+            });
+
             return new HttpResponseMessage
             {
                 StatusCode = expectedCall.StatusCode,
@@ -92,9 +113,9 @@ namespace fgiele.github.TestHelper
         {
             public string? Args { get; set; }
 
-            public string RequestUrl { get; set; } = String.Empty;
-
             public HttpMethod Method { get; set; } = HttpMethod.Get;
+
+            public string RequestUrl { get; set; } = String.Empty;
 
             public HttpContent? Response { get; set; }
 
