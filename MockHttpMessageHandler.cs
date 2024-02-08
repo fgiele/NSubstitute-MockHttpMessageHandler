@@ -4,7 +4,8 @@ using System.Text.Json;
 namespace fgiele.github.TestHelper
 {
     public class MockHttpMessageHandler : HttpMessageHandler
-    {        private readonly Queue<Call> _calls = new Queue<Call>();
+    { 
+        private readonly Queue<Call> _calls = new Queue<Call>();
         private readonly List<Call> _receivedCalls = new List<Call>();
         private readonly bool _errorIfIncorrectCall;
 
