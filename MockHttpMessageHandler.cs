@@ -87,7 +87,7 @@ namespace fgiele.github.TestHelper
                 }
                 if (request.Content != null)
                 {
-                    var requestArgs = await request.Content.ReadAsStringAsync();
+                    var requestArgs = await request.Content.ReadAsStringAsync(cancellationToken);
 
                     if (requestArgs != expectedCall.Args)
                     {
@@ -98,7 +98,7 @@ namespace fgiele.github.TestHelper
 
             _receivedCalls.Add(new Call
             {
-                Args = request.Content != null ? await request.Content.ReadAsStringAsync() : null,
+                Args = request.Content != null ? await request.Content.ReadAsStringAsync(cancellationToken) : null,
                 Method = request.Method,
                 RequestUrl = request.RequestUri?.AbsolutePath ?? string.Empty
             });
